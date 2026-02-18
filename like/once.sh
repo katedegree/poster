@@ -3,7 +3,7 @@
 # $1: session_token
 # $2: post_id
 
-echo "follow: $2"
+echo "like: $2"
 
 curl -s -o /dev/null -w "%{http_code}\n" -X POST \
   -H "Cookie: __Secure-better-auth.session_token=$1" \

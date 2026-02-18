@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 # $1: session_token
-FILE="./post_ids.txt"
+USER_FILE="./user_ids.txt"
 
-while read -r post_id; do
-  [ -z "$post_id" ] && continue
-  ./like/once.sh "$1" "$post_id"
-done < "$FILE"
+while read -r userId; do
+  [ -z "$userId" ] && continue
+  ./follow/once.sh "$1" "$userId"
+done < "$USER_FILE"
