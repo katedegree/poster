@@ -32,10 +32,9 @@ while true; do
         | jq -r '.hashtags[0].count // 0'
     )
 
-    # 差分 + 1
-    diff=$((count - alice_count + 1))
-
-    if [ "$diff" -gt 0 ]; then
+    # 同率トップでも上にする場合
+    if [ "$count" -ge "$alice_count" ]; then
+      diff=$((count - alice_count + 1))
       echo "post #alice x$diff (alice=$alice_count)"
 
       for ((i=0; i<diff; i++)); do
