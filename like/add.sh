@@ -7,6 +7,7 @@ while true; do
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] fetch start"
 
   curl -s "$BASE_URL" \
+    -H "Cookie: __Secure-better-auth.session_token=$1" \
   | jq -c '.items[]' \
   | while read -r item; do
       postId=$(echo "$item" | jq -r '.post.id')

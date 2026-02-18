@@ -11,6 +11,7 @@ while true; do
     [ -z "$userId" ] && continue
 
     curl -s "${BASE_URL}?userId=${userId}&tab=posts" \
+      -H "Cookie: __Secure-better-auth.session_token=$1" \
     | jq -c '.items[]' \
     | while read -r item; do
         postId=$(echo "$item" | jq -r '.post.id')
