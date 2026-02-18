@@ -11,12 +11,10 @@ set -a
 source .env
 set +a
 
-# 無限ループしている add 系だけログに出す
 ./follow/add.sh "$SESSION_TOKEN" "$USER_ID" >> app.log 2>&1 &
+./follow/all.sh "$SESSION_TOKEN" >> app.log 2>&1 &
 ./like/add.sh "$SESSION_TOKEN" >> app.log 2>&1 &
-
-# all 系はログ不要
-./follow/all.sh "$SESSION_TOKEN" &
-./like/all.sh "$SESSION_TOKEN" &
+./like/all.sh "$SESSION_TOKEN" >> app.log 2>&1 &
+./post/trend.sh "$SESSION_TOKEN" >> app.log 2>&1 &
 
 wait
