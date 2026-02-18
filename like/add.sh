@@ -10,7 +10,7 @@ while true; do
   | jq -c '.items[]' \
   | while read -r item; do
       postId=$(echo "$item" | jq -r '.post.id')
-      liked=$(echo "$item" | jq -r '.viewer.liked')
+      liked=$(echo "$item" | jq -r '.post.viewer.liked')
 
       if [ "$liked" = "false" ]; then
         echo "like: $postId"
