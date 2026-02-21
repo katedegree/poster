@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")"
+
 # すでにバックグラウンドなら何もしない
 if [ -z "$RUNNING_IN_BG" ]; then
   RUNNING_IN_BG=1 nohup "$0" "$@" >> app.log 2>&1 &
@@ -11,10 +13,10 @@ set -a
 source .env
 set +a
 
-./follow/add.sh "$SESSION_TOKEN" "$USER_ID" >> app.log 2>&1 &
-./follow/all.sh "$SESSION_TOKEN" >> app.log 2>&1 &
-./like/add.sh "$SESSION_TOKEN" >> app.log 2>&1 &
-./like/all.sh "$SESSION_TOKEN" >> app.log 2>&1 &
-./post/trend.sh "$SESSION_TOKEN" >> app.log 2>&1 &
+./follow/add.sh "$SESSION_TOKEN" "$USER_ID" &
+./follow/all.sh "$SESSION_TOKEN" &
+./like/add.sh "$SESSION_TOKEN" &
+./like/all.sh "$SESSION_TOKEN" &
+./post/trend.sh "$SESSION_TOKEN" &
 
 wait
