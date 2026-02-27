@@ -2,13 +2,6 @@
 
 cd "$(dirname "$0")"
 
-# すでにバックグラウンドなら何もしない
-if [ -z "$RUNNING_IN_BG" ]; then
-  RUNNING_IN_BG=1 nohup "$0" "$@" >> app.log 2>&1 &
-  disown
-  exit 0
-fi
-
 set -a
 source .env
 set +a

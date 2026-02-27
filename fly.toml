@@ -1,0 +1,8 @@
+app = 'katedegree-poster'
+primary_region = 'nrt'
+
+[build]
+
+[[vm]]
+  cpus = 1
+  memory_mb = 256
