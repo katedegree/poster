@@ -3,15 +3,15 @@
 # $1: session_token
 DISCOVER_URL="https://numatter.vercel.app/api/discover"
 POST_URL="https://numatter.vercel.app/api/posts"
-SEARCH_BASE_URL="https://numatter.vercel.app/api/search"
 
 while true; do
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] fetch start"
 
+  trends_json=$(curl -s "$DISCOVER_URL")
+
   # trends の 0 番目の tag と count を取得
   read -r tag count < <(
-    curl -s "$DISCOVER_URL" \
-      | jq -r '.trends[0] | "\(.tag) \(.count)"'
+    echo "$trends_json" | jq -r '.trends[0] | "\(.tag) \(.count)"'
   )
 
   if [ -z "$tag" ] || [ -z "$count" ]; then
@@ -20,32 +20,31 @@ while true; do
     continue
   fi
 
-  # tag が #alice なら何もしない
-  if [ "$tag" = "#alice" ]; then
-    echo "skip: $tag"
+  alice_count=$(
+    echo "$trends_json" | jq -r '(.trends[] | select(.tag == "#alice") | .count) // 0'
+  )
+
+  # trends[1] の count を取得
+  second_count=$(
+    echo "$trends_json" | jq -r '.trends[1].count // 0'
+  )
+
+  # #alice が単独トップ（2位と差がある）ならスキップ
+  if [ "$tag" = "#alice" ] && [ "$alice_count" -gt "$second_count" ]; then
+    echo "skip: alice is top ($alice_count) > second ($second_count)"
+  elif [ "$alice_count" -gt "$count" ]; then
+    echo "skip: alice=$alice_count > top=$count"
   else
-    echo "trend: $tag x$count"
+    diff=$((count - alice_count + 1))
+    echo "trend: $tag x$count (alice=$alice_count)"
+    echo "post #alice x$diff"
 
-    # SEARCH_URL?q=#alice を叩いて hashtags[0].count を取得
-    alice_count=$(
-      curl -s "${SEARCH_BASE_URL}?q=%23alice" \
-        | jq -r '.hashtags[0].count // 0'
-    )
-
-    # 同率トップでも上にする場合
-    if [ "$count" -ge "$alice_count" ]; then
-      diff=$((count - alice_count + 1))
-      echo "post #alice x$diff (alice=$alice_count)"
-
-      for ((i=0; i<diff; i++)); do
-        curl -s -X POST \
-          -H "Cookie: __Secure-better-auth.session_token=$1" \
-          -F 'content=#alice' \
-          "$POST_URL" > /dev/null
-      done
-    else
-      echo "no need to post (alice=$alice_count)"
-    fi
+    for ((i=0; i<diff; i++)); do
+      curl -s -X POST \
+        -H "Cookie: __Secure-better-auth.session_token=$1" \
+        -F 'content=#alice' \
+        "$POST_URL" > /dev/null
+    done
   fi
 
   sleep 600
