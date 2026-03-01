@@ -47,5 +47,5 @@ while true; do
     done
   fi
 
-  sleep 600
+  sleep 60
 done
